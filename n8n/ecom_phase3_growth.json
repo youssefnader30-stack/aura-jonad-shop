@@ -1,0 +1,62 @@
+{
+  "name": "Ecom_Phase3_Growth",
+  "nodes": [
+    {"id": "t_hook", "name": "Event_Hook", "type": "n8n-nodes-base.webhook",
+     "parameters": {"httpMethod": "POST", "path": "ecom_event"}, "position": [100, 400]},
+    {"id": "n26", "name": "N26_Event_Router", "type": "n8n-nodes-base.switch",
+     "parameters": {"dataPropertyName": "type",
+       "values": {"string": [
+         {"value": "cart.abandoned"},
+         {"value": "order.paid"},
+         {"value": "stock.low"},
+         {"value": "order.risky"},
+         {"value": "support.inbound"}
+       ]}}, "position": [320, 400]},
+    {"id": "n27", "name": "N27_CartRecovery", "type": "n8n-nodes-base.anthropic",
+     "parameters": {"model": "claude-haiku-4-5-20251001",
+       "systemPrompt": "Agent: CartRecovery. Send personalized email at 1h/24h/72h intervals. Dedupe via cart_id. Stop if order.paid received."}, "position": [560, 120]},
+    {"id": "n28", "name": "N28_Loyalty", "type": "n8n-nodes-base.anthropic",
+     "parameters": {"model": "claude-haiku-4-5-20251001",
+       "systemPrompt": "Agent: Loyalty. Award floor(total_cents/100) points. Issue 10%-off code at 500 points. Idempotent via order_id."}, "position": [560, 240]},
+    {"id": "n29", "name": "N29_Reco", "type": "n8n-nodes-base.anthropic",
+     "parameters": {"model": "claude-sonnet-4-6",
+       "systemPrompt": "Agent: Reco. Update user embedding from purchase history. Precompute top-10 related products for each active product (pgvector cosine)."}, "position": [560, 360]},
+    {"id": "n30", "name": "N30_Reorder", "type": "n8n-nodes-base.anthropic",
+     "parameters": {"model": "claude-haiku-4-5-20251001",
+       "systemPrompt": "Agent: Reorder. If stock<=5 draft PO with reorder_qty=30d_velocity*lead_days. Post to ops channel."}, "position": [560, 480]},
+    {"id": "n31", "name": "N31_Fraud", "type": "n8n-nodes-base.anthropic",
+     "parameters": {"model": "claude-sonnet-4-6",
+       "systemPrompt": "Agent: Fraud. Combine Stripe Radar score + heuristics (velocity, mismatched billing/shipping, disposable email). If score>70 hold order; else release."}, "position": [560, 600]},
+    {"id": "n32", "name": "N32_Triage", "type": "n8n-nodes-base.anthropic",
+     "parameters": {"model": "claude-sonnet-4-6",
+       "systemPrompt": "Agent: Triage. Classify inbound into {order,refund,shipping,product,other} with confidence. Low-confidence → human queue."}, "position": [560, 720]},
+    {"id": "n33", "name": "N33_ExperimentAllocator", "type": "n8n-nodes-base.function",
+     "parameters": {"functionCode": "return {json:{variant: (parseInt(require('crypto').createHash('md5').update($json.user_id).digest('hex').slice(0,8),16)%2)?'B':'A'}};"},
+     "position": [820, 400]},
+    {"id": "n34", "name": "N34_QA_v3", "type": "n8n-nodes-base.anthropic",
+     "parameters": {"model": "claude-opus-4-6",
+       "systemPrompt": "Agent: QA_v3. Validate recommendation relevance, cart-recovery dedupe, loyalty idempotency, fraud false-positive rate<2%. Return {pass,failures}."}, "position": [1060, 400]},
+    {"id": "n35", "name": "N35_KPI_Report", "type": "n8n-nodes-base.slack",
+     "parameters": {"channel": "#ecom", "text": "KPIs: revenue={{$json.rev}} AOV={{$json.aov}} CR={{$json.cr}} LTV={{$json.ltv}}"},
+     "position": [1300, 400]}
+  ],
+  "connections": {
+    "Event_Hook":       {"main": [[{"node": "N26_Event_Router", "type": "main", "index": 0}]]},
+    "N26_Event_Router": {"main": [
+      [{"node": "N27_CartRecovery", "type": "main", "index": 0}],
+      [{"node": "N28_Loyalty", "type": "main", "index": 0},
+       {"node": "N29_Reco", "type": "main", "index": 0}],
+      [{"node": "N30_Reorder", "type": "main", "index": 0}],
+      [{"node": "N31_Fraud", "type": "main", "index": 0}],
+      [{"node": "N32_Triage", "type": "main", "index": 0}]
+    ]},
+    "N27_CartRecovery": {"main": [[{"node": "N33_ExperimentAllocator", "type": "main", "index": 0}]]},
+    "N28_Loyalty":      {"main": [[{"node": "N33_ExperimentAllocator", "type": "main", "index": 0}]]},
+    "N29_Reco":         {"main": [[{"node": "N33_ExperimentAllocator", "type": "main", "index": 0}]]},
+    "N30_Reorder":      {"main": [[{"node": "N34_QA_v3", "type": "main", "index": 0}]]},
+    "N31_Fraud":        {"main": [[{"node": "N34_QA_v3", "type": "main", "index": 0}]]},
+    "N32_Triage":       {"main": [[{"node": "N34_QA_v3", "type": "main", "index": 0}]]},
+    "N33_ExperimentAllocator": {"main": [[{"node": "N34_QA_v3", "type": "main", "index": 0}]]},
+    "N34_QA_v3":        {"main": [[{"node": "N35_KPI_Report", "type": "main", "index": 0}]]}
+  }
+}

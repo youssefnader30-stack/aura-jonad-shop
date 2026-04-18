@@ -1,0 +1,175 @@
+{
+  "name": "Build_Ecommerce_Website",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "build_ecom",
+        "responseMode": "lastNode"
+      },
+      "id": "n0",
+      "name": "WF_Start",
+      "type": "n8n-nodes-base.webhook",
+      "position": [100, 400]
+    },
+    {
+      "parameters": {
+        "model": "claude-haiku-4-5-20251001",
+        "systemPrompt": "Agent: Spec_Agent. Role: normalize requirements into spec.json with fields: features[], stack, env[]. Output JSON only."
+      },
+      "id": "n1",
+      "name": "N1_Spec_Agent",
+      "type": "n8n-nodes-base.anthropic",
+      "position": [320, 400]
+    },
+    {
+      "parameters": {"mode": "passThrough"},
+      "id": "n2",
+      "name": "N2_Splitter",
+      "type": "n8n-nodes-base.splitInBatches",
+      "position": [540, 400]
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-6",
+        "systemPrompt": "Agent: DB_Agent. Produce PostgreSQL schema + RLS policies for ecommerce. Tables: users, profiles, products, categories, product_images, carts, cart_items, orders, order_items, reviews, admins. Output SQL only."
+      },
+      "id": "n3",
+      "name": "N3_DB_Agent",
+      "type": "n8n-nodes-base.anthropic",
+      "position": [760, 200]
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-6",
+        "systemPrompt": "Agent: Backend_Agent. Produce Next.js 15 API routes using Supabase. Routes: /api/auth/*, /api/products, /api/cart, /api/checkout, /api/orders, /api/reviews. Output file tree + code."
+      },
+      "id": "n4",
+      "name": "N4_Backend_Agent",
+      "type": "n8n-nodes-base.anthropic",
+      "position": [760, 340]
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-6",
+        "systemPrompt": "Agent: Frontend_Agent. Produce Next.js 15 App Router pages with Tailwind + shadcn/ui. Pages: /, /shop, /p/[slug], /cart, /checkout, /account, /orders. Output file tree + code."
+      },
+      "id": "n5",
+      "name": "N5_Frontend_Agent",
+      "type": "n8n-nodes-base.anthropic",
+      "position": [760, 480]
+    },
+    {
+      "parameters": {
+        "model": "claude-haiku-4-5-20251001",
+        "systemPrompt": "Agent: Payments_Agent. Produce Stripe checkout session creator + webhook handler in Next.js. Output code only."
+      },
+      "id": "n6",
+      "name": "N6_Payments_Agent",
+      "type": "n8n-nodes-base.anthropic",
+      "position": [760, 620]
+    },
+    {
+      "parameters": {"mode": "combine", "combinationMode": "mergeByPosition"},
+      "id": "n7",
+      "name": "N7_Merge",
+      "type": "n8n-nodes-base.merge",
+      "position": [1000, 400]
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-6",
+        "systemPrompt": "Agent: Admin_Agent. Produce /admin dashboard: product/inventory CRUD, orders view, users, analytics. Enforce RBAC via admins table. Output code."
+      },
+      "id": "n8",
+      "name": "N8_Admin_Agent",
+      "type": "n8n-nodes-base.anthropic",
+      "position": [1220, 400]
+    },
+    {
+      "parameters": {
+        "model": "claude-haiku-4-5-20251001",
+        "systemPrompt": "Agent: Search_Agent. Build search API using pg_trgm + filters (category, price, rating, sort) + reviews CRUD. Output code."
+      },
+      "id": "n9",
+      "name": "N9_Search_Agent",
+      "type": "n8n-nodes-base.anthropic",
+      "position": [1440, 400]
+    },
+    {
+      "parameters": {
+        "model": "claude-opus-4-6",
+        "systemPrompt": "Agent: QA_Agent. Run: lint, unit, e2e (Playwright), Semgrep, RLS audit. Return {pass:bool, failures:[]}."
+      },
+      "id": "n10",
+      "name": "N10_QA_Agent",
+      "type": "n8n-nodes-base.anthropic",
+      "position": [1660, 400]
+    },
+    {
+      "parameters": {"conditions": {"boolean": [{"value1": "={{$json.pass}}", "value2": true}]}},
+      "id": "n10b",
+      "name": "QA_Gate",
+      "type": "n8n-nodes-base.if",
+      "position": [1880, 400]
+    },
+    {
+      "parameters": {
+        "model": "claude-haiku-4-5-20251001",
+        "systemPrompt": "Agent: Deploy_Agent. Deploy Next.js to Vercel, run Supabase migrations, register Stripe webhook. Return URLs."
+      },
+      "id": "n11",
+      "name": "N11_Deploy_Agent",
+      "type": "n8n-nodes-base.anthropic",
+      "position": [2100, 300]
+    },
+    {
+      "parameters": {"channel": "#builds", "text": "Ecom deployed: {{$json.url}}"},
+      "id": "n12",
+      "name": "N12_Notify",
+      "type": "n8n-nodes-base.slack",
+      "position": [2320, 300]
+    },
+    {
+      "parameters": {
+        "model": "claude-haiku-4-5-20251001",
+        "systemPrompt": "Agent: Retry_Router. If attempt<=2 requeue failed node. Else escalate."
+      },
+      "id": "n13",
+      "name": "N13_Retry_Router",
+      "type": "n8n-nodes-base.anthropic",
+      "position": [2100, 500]
+    },
+    {
+      "parameters": {"channel": "#alerts", "text": "Build halted: {{$json.failures}}"},
+      "id": "n14",
+      "name": "N14_Escalate",
+      "type": "n8n-nodes-base.slack",
+      "position": [2320, 560]
+    }
+  ],
+  "connections": {
+    "WF_Start":          {"main": [[{"node": "N1_Spec_Agent", "type": "main", "index": 0}]]},
+    "N1_Spec_Agent":     {"main": [[{"node": "N2_Splitter", "type": "main", "index": 0}]]},
+    "N2_Splitter":       {"main": [[
+      {"node": "N3_DB_Agent", "type": "main", "index": 0},
+      {"node": "N4_Backend_Agent", "type": "main", "index": 0},
+      {"node": "N5_Frontend_Agent", "type": "main", "index": 0},
+      {"node": "N6_Payments_Agent", "type": "main", "index": 0}
+    ]]},
+    "N3_DB_Agent":       {"main": [[{"node": "N7_Merge", "type": "main", "index": 0}]]},
+    "N4_Backend_Agent":  {"main": [[{"node": "N7_Merge", "type": "main", "index": 1}]]},
+    "N5_Frontend_Agent": {"main": [[{"node": "N7_Merge", "type": "main", "index": 2}]]},
+    "N6_Payments_Agent": {"main": [[{"node": "N7_Merge", "type": "main", "index": 3}]]},
+    "N7_Merge":          {"main": [[{"node": "N8_Admin_Agent", "type": "main", "index": 0}]]},
+    "N8_Admin_Agent":    {"main": [[{"node": "N9_Search_Agent", "type": "main", "index": 0}]]},
+    "N9_Search_Agent":   {"main": [[{"node": "N10_QA_Agent", "type": "main", "index": 0}]]},
+    "N10_QA_Agent":      {"main": [[{"node": "QA_Gate", "type": "main", "index": 0}]]},
+    "QA_Gate":           {"main": [
+      [{"node": "N11_Deploy_Agent", "type": "main", "index": 0}],
+      [{"node": "N13_Retry_Router", "type": "main", "index": 0}]
+    ]},
+    "N11_Deploy_Agent":  {"main": [[{"node": "N12_Notify", "type": "main", "index": 0}]]},
+    "N13_Retry_Router":  {"main": [[{"node": "N14_Escalate", "type": "main", "index": 0}]]}
+  }
+}

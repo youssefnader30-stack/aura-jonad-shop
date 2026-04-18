@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-void: #0A0A0B;
+  --color-raise: #111114;
+  --color-line: #1F1F24;
+  --color-ice: #F5F7FA;
+  --color-steel: #8A8F98;
+  --color-cyan: #00E0D1;
+  --color-plasma: #6A5CFF;
+  --color-amber: #FFB020;
+  --color-crimson: #FF4D6D;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--color-cyan);
+  color: #000;
+}

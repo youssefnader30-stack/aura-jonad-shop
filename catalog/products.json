@@ -1,0 +1,123 @@
+{
+  "currency": "USD",
+  "products": [
+    {
+      "slug": "free-10-automations",
+      "name": "10 AI Automations Saving 5 Hrs/Week",
+      "tier": "lead-magnet",
+      "price_cents": 0,
+      "kind": "digital",
+      "tagline": "Free 5-page PDF + 1 ready-to-import n8n workflow.",
+      "description": "A starter pack for operators who want real automation, not theory. Includes: a 5-page PDF of 10 proven time-sinks and how to automate each, plus 1 importable n8n workflow (lead-capture → auto-follow-up). Delivered to inbox.",
+      "bullets": [
+        "10 real use-cases, not AI hype",
+        "One workflow you can run today",
+        "Swipe file of 5 cold-email openers"
+      ],
+      "deliverables": ["email capture", "PDF download", "n8n JSON file"],
+      "cta": "Get it free"
+    },
+    {
+      "slug": "ai-automation-starter-kit",
+      "name": "AI Automation Starter Kit",
+      "tier": "entry",
+      "price_cents": 2700,
+      "kind": "digital",
+      "tagline": "7 n8n workflows that run your busywork.",
+      "description": "Seven production-ready n8n workflows covering lead capture, follow-up sequencing, invoice generation, support triage, weekly reporting, content repurposing, and competitive scraping. Comes with a 20-minute Loom, JSON import files, and a setup checklist.",
+      "bullets": [
+        "7 ready-to-import n8n JSON workflows",
+        "20-min walkthrough + setup checklist",
+        "Works with free n8n self-host or n8n Cloud",
+        "Lifetime updates"
+      ],
+      "deliverables": ["7 .json files", "1 video", "1 PDF"],
+      "cta": "Grab the kit"
+    },
+    {
+      "slug": "business-ops-prompt-vault",
+      "name": "Business Ops Prompt Vault",
+      "tier": "core",
+      "price_cents": 4700,
+      "kind": "digital",
+      "tagline": "80 battle-tested prompts. Categorized. No fluff.",
+      "description": "A Notion database of 80 prompts used inside real companies — sales discovery, ops SOPs, content repurposing, HR interviewing, finance summaries. Each prompt ships with an example output, a tuning guide, and the model it's optimized for.",
+      "bullets": [
+        "80 prompts across 5 departments",
+        "Notion DB with filters and tags",
+        "Example outputs + tuning notes",
+        "Updated monthly"
+      ],
+      "deliverables": ["Notion template link", "PDF backup"],
+      "cta": "Unlock the vault"
+    },
+    {
+      "slug": "chatbot-in-a-box",
+      "name": "Chatbot-in-a-Box",
+      "tier": "core",
+      "price_cents": 9700,
+      "kind": "digital",
+      "tagline": "Deploy a RAG chatbot in one hour.",
+      "description": "Everything to ship a production chatbot on Telegram, WhatsApp, or your site. Includes: n8n orchestration workflow, vector DB schema (Supabase pgvector), knowledge-base ingestor, conversation logger, and a 60-minute video build-along.",
+      "bullets": [
+        "n8n workflow + Supabase schema",
+        "Multi-channel (Telegram/WA/Web)",
+        "Knowledge-base RAG included",
+        "60-min build-along video"
+      ],
+      "deliverables": ["n8n JSON", "SQL schema", "video walkthrough", "env template"],
+      "cta": "Ship your chatbot"
+    },
+    {
+      "slug": "freelancer-ops-stack",
+      "name": "Freelancer Ops Stack",
+      "tier": "core",
+      "price_cents": 14700,
+      "kind": "digital",
+      "tagline": "Your entire freelance business, automated.",
+      "description": "A complete operating system for freelancers and solo consultants — CRM, proposal generator, invoicing, client portal, and the n8n automations that tie them together. Built from systems used by $10k/mo operators.",
+      "bullets": [
+        "Notion CRM + proposal + invoice templates",
+        "Client portal with login",
+        "6 n8n automations (onboarding, reminders, handoff)",
+        "45-min setup course"
+      ],
+      "deliverables": ["Notion workspace", "6 .json workflows", "course access"],
+      "cta": "Run your biz on autopilot"
+    },
+    {
+      "slug": "automation-audit-dfy",
+      "name": "Automation Audit + Done-For-You Build",
+      "tier": "upsell",
+      "price_cents": 49700,
+      "kind": "service",
+      "tagline": "60-min diagnostic. One custom workflow. Delivered in 7 days.",
+      "description": "Book a diagnostic call, we map your 3 biggest time-sinks, then we build one custom n8n workflow end-to-end within 7 days. Includes 30 days of post-launch support. Limited to 4 projects per month.",
+      "bullets": [
+        "60-min Zoom diagnostic",
+        "1 custom workflow (up to 20 nodes)",
+        "Handover video + documentation",
+        "30 days post-launch support"
+      ],
+      "deliverables": ["Zoom call", "custom workflow", "docs", "support Slack channel"],
+      "cta": "Book an audit"
+    },
+    {
+      "slug": "ai-automation-transformation",
+      "name": "AI Automation Transformation",
+      "tier": "anchor",
+      "price_cents": 149700,
+      "kind": "service",
+      "tagline": "Rewire your business. 5 workflows. 90 days of support.",
+      "description": "The full transformation engagement: a deep audit, 5 custom n8n workflows built across sales, ops, delivery, support, and reporting, team training, and 90 days of hands-on support. For operators serious about scaling.",
+      "bullets": [
+        "Full ops audit (2 weeks)",
+        "5 custom workflows built (4 weeks)",
+        "Team training + SOPs",
+        "90 days of support"
+      ],
+      "deliverables": ["audit report", "5 workflows", "training videos", "Slack support"],
+      "cta": "Apply for transformation"
+    }
+  ]
+}
