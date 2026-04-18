@@ -3,13 +3,13 @@ import Link from 'next/link';
 
 const PRODUCTS = [
   { slug:'free-10-automations',       name:'10 AI Automations',          tagline:'5 hours/week back, for free.',               price:'$0',    tier:'Free',   cta:'Get it free' },
-  { slug:'ai-automation-starter-kit', name:'Automation Starter Kit',     tagline:'7 n8n workflows. 20-min walkthrough.',       price:'$27',   tier:'Entry',  cta:'Grab the kit' },
-  { slug:'business-ops-prompt-vault', name:'Ops Prompt Vault',           tagline:'80 prompts. 5 departments. No fluff.',       price:'$47',   tier:'Core',   cta:'Unlock' },
-  { slug:'chatbot-in-a-box',          name:'Chatbot-in-a-Box',           tagline:'RAG chatbot. Deploy in 1 hour.',             price:'$97',   tier:'Core',   cta:'Ship it' },
-  { slug:'freelancer-ops-stack',      name:'Freelancer Ops Stack',       tagline:'Your whole freelance biz, automated.',       price:'$147',  tier:'Core',   cta:'Install' },
+  { slug:'ai-automation-starter-kit', name:'Automation Starter Kit',     tagline:'7 n8n workflows. 20-min walkthrough.',       price:'$27',   tier:'Entry',  cta:'Early access — 30% off', earlyAccess:true },
+  { slug:'business-ops-prompt-vault', name:'Ops Prompt Vault',           tagline:'80 prompts. 5 departments. No fluff.',       price:'$47',   tier:'Core',   cta:'Early access — 30% off', earlyAccess:true },
+  { slug:'chatbot-in-a-box',          name:'Chatbot-in-a-Box',           tagline:'RAG chatbot. Deploy in 1 hour.',             price:'$97',   tier:'Core',   cta:'Early access — 30% off', earlyAccess:true },
+  { slug:'freelancer-ops-stack',      name:'Freelancer Ops Stack',       tagline:'Your whole freelance biz, automated.',       price:'$147',  tier:'Core',   cta:'Early access — 30% off', earlyAccess:true },
   { slug:'automation-audit-dfy',      name:'Audit + DFY Build',          tagline:'60-min audit + 1 custom workflow in 7 days.', price:'$497',  tier:'Service', cta:'Book an audit', featured:true },
   { slug:'ai-automation-transformation', name:'Full Transformation',    tagline:'Audit + 5 workflows + 90 days support.',     price:'$1,497',tier:'Service', cta:'Apply' },
-];
+] as const;
 
 export default function Home() {
   return (
@@ -85,7 +85,12 @@ export default function Home() {
               <div className="text-xs uppercase tracking-widest text-[#8A8F98]">{p.tier}</div>
               <div className="mt-1 text-xl font-semibold">{p.name}</div>
               <div className="mt-2 text-sm text-[#8A8F98]">{p.tagline}</div>
-              <div className="mt-6 flex items-end justify-between">
+              {'earlyAccess' in p && p.earlyAccess && (
+                <div className="mt-3 px-2 py-1 rounded bg-[#00E0D1]/10 border border-[#00E0D1]/30 text-xs text-[#00E0D1] inline-block">
+                  🔥 Priority list — 30% off at launch
+                </div>
+              )}
+              <div className="mt-4 flex items-end justify-between">
                 <div className="font-mono text-2xl">{p.price}</div>
                 <Link href={`/products/${p.slug}`} className="text-[#00E0D1] text-sm font-medium group-hover:underline">
                   {p.cta} →

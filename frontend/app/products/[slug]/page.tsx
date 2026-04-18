@@ -79,12 +79,28 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           </h1>
           <p className="mt-4 text-lg md:text-xl text-[#8A8F98] max-w-2xl">{p.tagline}</p>
 
-          <div className="mt-8 flex items-center gap-6">
+          <div className="mt-8">
             <span className="font-mono text-4xl">{price}</span>
-            <a href={checkoutUrl(p)}
-               className="px-8 py-3.5 rounded-md bg-gradient-to-r from-[#00E0D1] to-[#6A5CFF] text-black font-semibold text-lg">
-              {p.cta}
-            </a>
+            {p.price_cents > 0 && p.kind === 'digital' ? (
+              <div className="mt-6 rounded-xl border border-[#00E0D1]/30 bg-gradient-to-br from-[#111114] to-[#0A0A0B] p-6">
+                <div className="text-sm text-[#00E0D1] font-semibold uppercase tracking-widest">🔥 Priority Access — 30% Off</div>
+                <p className="mt-2 text-[#8A8F98] text-sm">We launch in 24–48h. Join the priority list and lock in your early discount.</p>
+                <form action="/api/leads" method="POST" className="mt-4 flex flex-col md:flex-row gap-3">
+                  <input name="email" type="email" required placeholder="you@company.com"
+                         className="flex-1 px-4 py-3 rounded-md bg-[#0A0A0B] border border-[#1F1F24] text-white placeholder-[#8A8F98] focus:border-[#00E0D1] outline-none" />
+                  <input type="hidden" name="source" value={`early-access-${p.slug}`} />
+                  <button type="submit" className="px-6 py-3 rounded-md bg-gradient-to-r from-[#00E0D1] to-[#6A5CFF] text-black font-semibold whitespace-nowrap">
+                    Join Priority Access
+                  </button>
+                </form>
+                <p className="mt-2 text-xs text-[#8A8F98]">No spam. You'll get a discount code the moment checkout opens.</p>
+              </div>
+            ) : (
+              <a href={checkoutUrl(p)}
+                 className="mt-4 inline-block px-8 py-3.5 rounded-md bg-gradient-to-r from-[#00E0D1] to-[#6A5CFF] text-black font-semibold text-lg">
+                {p.cta}
+              </a>
+            )}
           </div>
         </div>
       </section>
