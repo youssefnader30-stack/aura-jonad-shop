@@ -3,7 +3,9 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY;
-const webhookSecret = process.env.GUMROAD_WEBHOOK_SECRET;
+const webhookSecret =
+  process.env.GUMROAD_WEBHOOK_SECRET ||
+  process.env.LEMON_WEBHOOK_SECRET;
 
 type PurchasePayload = {
   email?: string;
@@ -11,9 +13,22 @@ type PurchasePayload = {
   product_id?: string;
   gumroad_order_id?: string;
   sale_id?: string;
+  order_id?: string;
   download_url?: string;
   purchased_at?: string;
   user_id?: string;
+  // Lemon Squeezy nested payload support
+  data?: {
+    attributes?: {
+      user_email?: string;
+      product_name?: string;
+      product_id?: number;
+      order_number?: number;
+      created_at?: string;
+      urls?: { receipt?: string };
+    };
+  };
+  meta?: { event_name?: string };
 };
 
 export async function POST(req: NextRequest) {
@@ -29,12 +44,23 @@ export async function POST(req: NextRequest) {
   }
 
   const payload = (await req.json()) as PurchasePayload;
-  const email = (payload.email || '').toLowerCase().trim();
-  const gumroadOrderId = payload.gumroad_order_id || payload.sale_id || '';
 
-  if (!email || !productNameIsValid(payload.product_name) || !payload.product_id || !gumroadOrderId) {
+  // Normalize: support both flat Gumroad/n8n payloads AND nested Lemon Squeezy webhooks
+  const lemon = payload.data?.attributes;
+  const email = (lemon?.user_email || payload.email || '').toLowerCase().trim();
+  const productName = lemon?.product_name || payload.product_name || '';
+  const productId = lemon?.product_id?.toString() || payload.product_id || '';
+  const gumroadOrderId =
+    payload.gumroad_order_id ||
+    payload.sale_id ||
+    payload.order_id ||
+    (lemon?.order_number ? `lemon-${lemon.order_number}` : '');
+  const downloadUrl = lemon?.urls?.receipt || payload.download_url || null;
+  const purchasedAt = lemon?.created_at || payload.purchased_at || new Date().toISOString();
+
+  if (!email || !productNameIsValid(productName) || !productId || !gumroadOrderId) {
     return NextResponse.json(
-      { error: 'Missing email, product_name, product_id, or gumroad_order_id' },
+      { error: 'Missing email, product_name, product_id, or order_id' },
       { status: 400 }
     );
   }
@@ -49,11 +75,11 @@ export async function POST(req: NextRequest) {
       {
         user_id: payload.user_id || null,
         email,
-        product_name: payload.product_name,
-        product_id: payload.product_id,
+        product_name: productName,
+        product_id: productId,
         gumroad_order_id: gumroadOrderId,
-        purchased_at: payload.purchased_at || new Date().toISOString(),
-        download_url: payload.download_url || null,
+        purchased_at: purchasedAt,
+        download_url: downloadUrl,
       },
       { onConflict: 'gumroad_order_id' }
     )
