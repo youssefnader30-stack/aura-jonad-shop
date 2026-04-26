@@ -25,6 +25,43 @@ export default function Home() {
             <a href="#services" className="hover:text-white">Services</a>
             <a href="#method"   className="hover:text-white">Method</a>
             <a href="#faq"      className="hover:text-white">FAQ</a>
+            <Link href="/login" className="hover:text-white">My Products</Link>
+          </nav>
+          <Link href="#products" className="px-4 py-2 rounded-md bg-gradient-to-r from-[#00E0D1] to-[#6A5CFF] text-black font-semibold text-sm">
+            Start
+          </Link>
+        </div>
+      </header>
+
+      {/* HERO */}
+      <section className="relative overflow-hidden">
+// app/page.tsx — AuraJonad landing
+import Link from 'next/link';
+
+const PRODUCTS = [
+  { slug:'free-10-automations',       name:'10 AI Automations',          tagline:'5 hours/week back, for free.',               price:'$0',    tier:'Free',   cta:'Get it free' },
+  { slug:'ai-automation-starter-kit', name:'Automation Starter Kit',     tagline:'7 n8n workflows. 20-min walkthrough.',       price:'$27',   tier:'Entry',  cta:'Early access — 30% off', earlyAccess:true },
+  { slug:'business-ops-prompt-vault', name:'Ops Prompt Vault',           tagline:'80 prompts. 5 departments. No fluff.',       price:'$47',   tier:'Core',   cta:'Early access — 30% off', earlyAccess:true },
+  { slug:'chatbot-in-a-box',          name:'Chatbot-in-a-Box',           tagline:'RAG chatbot. Deploy in 1 hour.',             price:'$97',   tier:'Core',   cta:'Early access — 30% off', earlyAccess:true },
+  { slug:'freelancer-ops-stack',      name:'Freelancer Ops Stack',       tagline:'Your whole freelance biz, automated.',       price:'$147',  tier:'Core',   cta:'Early access — 30% off', earlyAccess:true },
+  { slug:'automation-audit-dfy',      name:'Audit + DFY Build',          tagline:'60-min audit + 1 custom workflow in 7 days.', price:'$497',  tier:'Service', cta:'Book an audit', featured:true },
+  { slug:'ai-automation-transformation', name:'Full Transformation',    tagline:'Audit + 5 workflows + 90 days support.',     price:'$1,497',tier:'Service', cta:'Apply' },
+] as const;
+
+export default function Home() {
+  return (
+    <main className="min-h-screen bg-[#0A0A0B] text-[#F5F7FA] selection:bg-[#00E0D1] selection:text-black">
+      {/* NAV */}
+      <header className="sticky top-0 z-50 backdrop-blur bg-[#0A0A0B]/80 border-b border-[#1F1F24]">
+        <div className="max-w-6xl mx-auto flex items-center justify-between px-6 py-4">
+          <Link href="/" className="flex items-center gap-2">
+            <img src="/logo.svg" alt="AuraJonad" className="h-7" />
+          </Link>
+          <nav className="hidden md:flex gap-7 text-sm text-[#8A8F98]">
+            <a href="#products" className="hover:text-white">Products</a>
+            <a href="#services" className="hover:text-white">Services</a>
+            <a href="#method"   className="hover:text-white">Method</a>
+            <a href="#faq"      className="hover:text-white">FAQ</a>
           </nav>
           <Link href="#products" className="px-4 py-2 rounded-md bg-gradient-to-r from-[#00E0D1] to-[#6A5CFF] text-black font-semibold text-sm">
             Start
